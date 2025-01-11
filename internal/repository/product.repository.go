@@ -8,11 +8,12 @@ import (
 )
 
 type ProductRepositoryInterface interface {
-	FindAllProduct() (*models.Products, error)
+	FindAllProduct(limit, offset int, search, sort, order string) (*models.Products, error)
 	FindProductById(id int) (*models.Product, error)
 	InsertProduct(body *models.Product) (*models.Product, error)
 	EditProduct(id int, body *models.Product) (*models.Product, error)
 	RemoveProduct(id int) error
+	CountProduct(search string) (int, error)
 }
 
 type ProductRepository struct {
@@ -23,11 +24,23 @@ func NewProductRepository(db *sqlx.DB) *ProductRepository {
 	return &ProductRepository{db}
 }
 
-func (r *ProductRepository) FindAllProduct() (*models.Products, error) {
-	query := `SELECT id, name, description, price, stock  FROM products ORDER BY id asc`
-	data := models.Products{}
+func (r *ProductRepository) FindAllProduct(limit, offset int, search, sort, order string) (*models.Products, error) {
+	if sort != "price" {
+		sort = "id"
+	}
 
-	err := r.Select(&data, query)
+	if order != "desc" {
+		order = "asc"
+	}
+
+	query := `SELECT id, name, description, price, stock 
+	          FROM products
+	          WHERE LOWER(name) LIKE $1
+	          ORDER BY ` + sort + ` ` + order + `
+	          LIMIT $2 OFFSET $3`
+
+	data := models.Products{}
+	err := r.Select(&data, query, "%"+search+"%", limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -109,4 +122,14 @@ func (r *ProductRepository) RemoveProduct(id int) error {
 		return err
 	}
 	return nil
+}
+
+func (r *ProductRepository) CountProduct(search string) (int, error) {
+	query := `SELECT COUNT(*) FROM products WHERE LOWER(name) LIKE $1`
+	var count int
+	err := r.Get(&count, query, "%"+search+"%")
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }

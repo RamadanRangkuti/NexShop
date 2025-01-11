@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"fmt"
+	"math"
 	"strconv"
 	"time"
 
@@ -23,12 +24,55 @@ func NewProductHandler(r repository.ProductRepositoryInterface) *ProductHandler 
 
 func (h *ProductHandler) GetAllProduct(ctx *gin.Context) {
 	response := pkg.NewResponse(ctx)
-	result, err := h.FindAllProduct()
+	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(ctx.DefaultQuery("limit", "5"))
+	search := ctx.DefaultQuery("search", "")
+	sort := ctx.DefaultQuery("sort", "id")
+	order := ctx.DefaultQuery("order", "asc")
+
+	if page < 1 {
+		response.BadRequest("Invalid input", "Page must be 1 or greater")
+		return
+	}
+	if limit < 1 {
+		response.BadRequest("Invalid input", "Limit must be 1 or greater")
+		return
+	}
+
+	if sort != "id" && sort != "price" {
+		response.BadRequest("Invalid input", "Sort must be either 'id' or 'price'")
+		return
+	}
+	if order != "asc" && order != "desc" {
+		response.BadRequest("Invalid input", "Order must be either 'asc' or 'desc'")
+		return
+	}
+
+	offset := (page - 1) * limit
+
+	count, _ := h.CountProduct(search)
+	products, err := h.FindAllProduct(limit, offset, search, sort, order)
 	if err != nil {
 		response.InternalServerError("get data failed", err.Error())
 		return
 	}
-	response.Success("Success get all products", result)
+	totalPages := int(math.Ceil(float64(count) / float64(limit)))
+
+	pageInfo := &pkg.PageInfo{
+		CurrentPage: page,
+		NextPage:    page + 1,
+		PrevPage:    page - 1,
+		TotalPage:   totalPages,
+		TotalData:   count,
+	}
+	if page >= totalPages {
+		pageInfo.NextPage = 0
+	}
+	if page <= 1 {
+		pageInfo.PrevPage = 0
+	}
+
+	response.GetAllSuccess("Success get all products", products, pageInfo)
 }
 
 func (h *ProductHandler) GetProductById(ctx *gin.Context) {

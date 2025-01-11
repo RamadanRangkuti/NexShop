@@ -11,10 +11,19 @@ type Responder struct {
 }
 
 type Response struct {
-	Status  int         `json:"status"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
-	Error   interface{} `json:"error,omitempty"`
+	Status   int         `json:"status"`
+	Message  string      `json:"message"`
+	PageInfo *PageInfo   `json:"pageInfo,omitempty"`
+	Data     interface{} `json:"data,omitempty"`
+	Error    interface{} `json:"error,omitempty"`
+}
+
+type PageInfo struct {
+	CurrentPage int `json:"currentPage"`
+	NextPage    int `json:"nextPage"`
+	PrevPage    int `json:"prevPage"`
+	TotalPage   int `json:"totalPage"`
+	TotalData   int `json:"totalData"`
 }
 
 func NewResponse(ctx *gin.Context) *Responder {
@@ -26,6 +35,15 @@ func (r *Responder) Success(message string, data interface{}) {
 		Status:  http.StatusOK,
 		Message: message,
 		Data:    data,
+	})
+}
+
+func (r *Responder) GetAllSuccess(message string, data interface{}, page *PageInfo) {
+	r.C.JSON(http.StatusOK, Response{
+		Status:   http.StatusOK,
+		Message:  message,
+		PageInfo: page,
+		Data:     data,
 	})
 }
 
