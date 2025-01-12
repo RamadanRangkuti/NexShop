@@ -12,7 +12,7 @@ NEXShop is a simple restful api for managing e-commerce. This application makes 
    - [Installation](#Installation)
    - [Configuration](#Configuration)
    - [Run](#Run)
-   - [Directory Structure](#Directory Structure)
+   - [DirectoryStructure](#Directory Structure)
 3. [Contact](#Contact)
 
 ## About
@@ -84,7 +84,7 @@ $ go run cmd/main.go
 ```
 
 
-### Directory Structure
+### DirectoryStructure
 
 - **cmd/**: Entry point of the application.
 - **internal/**:  Business logic for the application.
