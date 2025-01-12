@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/RamadanRangkuti/NexShop/internal/repository"
 	"github.com/RamadanRangkuti/NexShop/pkg"
@@ -27,9 +26,15 @@ func NewShoppingCartHandler(
 func (h *ShoppingCartHandler) AddToCart(ctx *gin.Context) {
 	response := pkg.NewResponse(ctx)
 
-	userID, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
-		response.BadRequest("Invalid user ID", err.Error())
+	userId, exists := ctx.Get("UserId")
+
+	if !exists {
+		response.Unauthorized("Unauthorized", nil)
+		return
+	}
+	id, ok := userId.(int)
+	if !ok {
+		response.InternalServerError("Failed to parse user ID from token", nil)
 		return
 	}
 
@@ -60,7 +65,7 @@ func (h *ShoppingCartHandler) AddToCart(ctx *gin.Context) {
 	}
 
 	// Check apakah product sudah ada di cart
-	cartItem, err := h.ShoppingCartRepositoryInterface.FindCartItem(userID, req.ProductID)
+	cartItem, err := h.ShoppingCartRepositoryInterface.FindCartItem(id, req.ProductID)
 	if err != nil {
 		response.InternalServerError("Failed to check cart", err.Error())
 		return
@@ -68,10 +73,10 @@ func (h *ShoppingCartHandler) AddToCart(ctx *gin.Context) {
 
 	if cartItem != nil {
 		// Update item di cart yang ada
-		err = h.ShoppingCartRepositoryInterface.UpdateCartItem(userID, req.ProductID, req.Quantity)
+		err = h.ShoppingCartRepositoryInterface.UpdateCartItem(id, req.ProductID, req.Quantity)
 	} else {
 		// Tambah item baru ke cart
-		err = h.ShoppingCartRepositoryInterface.AddCartItem(userID, req.ProductID, req.Quantity)
+		err = h.ShoppingCartRepositoryInterface.AddCartItem(id, req.ProductID, req.Quantity)
 	}
 
 	if err != nil {
@@ -84,10 +89,15 @@ func (h *ShoppingCartHandler) AddToCart(ctx *gin.Context) {
 
 func (h *ShoppingCartHandler) GetCartById(ctx *gin.Context) {
 	response := pkg.NewResponse(ctx)
-	id, err := strconv.Atoi(ctx.Param("id"))
+	userId, exists := ctx.Get("UserId")
 
-	if err != nil {
-		response.BadRequest("Invalid input", err.Error())
+	if !exists {
+		response.Unauthorized("Unauthorized", nil)
+		return
+	}
+	id, ok := userId.(int)
+	if !ok {
+		response.InternalServerError("Failed to parse user ID from token", nil)
 		return
 	}
 

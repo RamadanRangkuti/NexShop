@@ -79,7 +79,7 @@ func (h *UserHandler) GetUserById(ctx *gin.Context) {
 	response := pkg.NewResponse(ctx)
 
 	userId, exists := ctx.Get("UserId")
-	fmt.Println("userid", userId)
+
 	if !exists {
 		response.Unauthorized("Unauthorized", nil)
 		return
@@ -129,7 +129,7 @@ func (h *UserHandler) UpdateUser(ctx *gin.Context) {
 	response := pkg.NewResponse(ctx)
 
 	userId, exists := ctx.Get("UserId")
-	fmt.Println("userid", userId)
+
 	if !exists {
 		response.Unauthorized("Unauthorized", nil)
 		return
@@ -182,7 +182,7 @@ func (h *UserHandler) UpdateUser(ctx *gin.Context) {
 func (h *UserHandler) DeleteUser(ctx *gin.Context) {
 	response := pkg.NewResponse(ctx)
 	userId, exists := ctx.Get("UserId")
-	fmt.Println("userid", userId)
+
 	if !exists {
 		response.Unauthorized("Unauthorized", nil)
 		return
