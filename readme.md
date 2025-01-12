@@ -12,7 +12,7 @@ NEXShop is a simple restful api for managing e-commerce. This application makes 
    - [Installation](#Installation)
    - [Configuration](#Configuration)
    - [Run](#Run)
-   - [DirectoryStructure](#Directory Structure)
+   - [DirectoryStructure](#DirectoryStructure)
 3. [Contact](#Contact)
 
 ## About
