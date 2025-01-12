@@ -53,7 +53,7 @@ func (h *ProductHandler) GetAllProduct(ctx *gin.Context) {
 	count, _ := h.CountProduct(search)
 	products, err := h.FindAllProduct(limit, offset, search, sort, order)
 	if err != nil {
-		response.InternalServerError("get data failed", err.Error())
+		response.InternalServerError("get product failed", err.Error())
 		return
 	}
 	totalPages := int(math.Ceil(float64(count) / float64(limit)))
@@ -86,7 +86,7 @@ func (h *ProductHandler) GetProductById(ctx *gin.Context) {
 
 	result, err := h.FindProductById(id)
 	if err != nil {
-		response.InternalServerError("get data failed", err.Error())
+		response.InternalServerError("get product failed", err.Error())
 		return
 	}
 
@@ -101,7 +101,7 @@ func (h *ProductHandler) CreateProduct(ctx *gin.Context) {
 	response := pkg.NewResponse(ctx)
 	var req dto.CreateProductRequest
 	if err := ctx.ShouldBind(&req); err != nil {
-		response.BadRequest("create data failed", err.Error())
+		response.BadRequest("create product failed", err.Error())
 		return
 	}
 
@@ -119,10 +119,10 @@ func (h *ProductHandler) CreateProduct(ctx *gin.Context) {
 	result, err := h.InsertProduct(&product)
 
 	if err != nil {
-		response.BadRequest("create data failed", err.Error())
+		response.BadRequest("create product failed", err.Error())
 		return
 	}
-	response.Created("create data success", result)
+	response.Created("create product success", result)
 }
 
 func (h *ProductHandler) UpdateProduct(ctx *gin.Context) {
@@ -141,7 +141,7 @@ func (h *ProductHandler) UpdateProduct(ctx *gin.Context) {
 
 	var req dto.UpdateProductRequest
 	if err := ctx.ShouldBind(&req); err != nil {
-		response.BadRequest("update data failed", err.Error())
+		response.BadRequest("update product failed", err.Error())
 		return
 	}
 
@@ -172,7 +172,7 @@ func (h *ProductHandler) UpdateProduct(ctx *gin.Context) {
 		return
 	}
 
-	response.Success("Update data success", result)
+	response.Success("Update product success", result)
 }
 
 func (h *ProductHandler) DeleteProduct(ctx *gin.Context) {
@@ -189,7 +189,7 @@ func (h *ProductHandler) DeleteProduct(ctx *gin.Context) {
 	}
 	err = h.RemoveProduct(id)
 	if err != nil {
-		response.BadRequest("delete data failed", err.Error())
+		response.BadRequest("delete product failed", err.Error())
 		return
 	}
 

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/RamadanRangkuti/NexShop/internal/models"
 	"github.com/jmoiron/sqlx"
@@ -14,6 +15,7 @@ type ProductRepositoryInterface interface {
 	EditProduct(id int, body *models.Product) (*models.Product, error)
 	RemoveProduct(id int) error
 	CountProduct(search string) (int, error)
+	ReduceStock(productID, quantity int) error
 }
 
 type ProductRepository struct {
@@ -132,4 +134,21 @@ func (r *ProductRepository) CountProduct(search string) (int, error) {
 		return 0, err
 	}
 	return count, nil
+}
+
+func (r *ProductRepository) ReduceStock(productID, quantity int) error {
+	query := `UPDATE products 
+	          SET stock = stock - $1 
+	          WHERE id = $2 AND stock >= $1`
+	result, err := r.Exec(query, quantity, productID)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		return fmt.Errorf("insufficient stock")
+	}
+
+	return nil
 }
