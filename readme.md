@@ -99,4 +99,4 @@ $ go run cmd/main.go
 
 ## Contact
 
-Ramadan Rankguti - ramadanrangkuti17@gmail.com
+Ramadan Rangkuti - ramadanrangkuti17@gmail.com

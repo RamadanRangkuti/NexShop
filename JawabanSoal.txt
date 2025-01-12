@@ -1,0 +1,68 @@
+2.
+    * Fetch a user by username.
+        - Buat Buat indeks pada kolom username
+        : CREATE INDEX idx_users_username ON users(username);
+    * Fetch Users Who Signed Up After a Certain Date (created_at > "2023-01-01")
+        - Buat indeks pada kolom created_at:
+        - CREATE INDEX idx_users_created_at ON users(created_at);
+    * Fetch a User by Email
+        - Buat indeks pada kolom email
+            - CREATE INDEX idx_users_email ON users(email);
+
+    Penjelasan
+
+        Mengapa semua menggunakan individual index?
+            - Karna untuk semua case hanya 1 kolom yang digunakan jadi tidak perlu composite index
+        - Query hanya menggunakan kolom username/ created_at/ email untuk masing-masing filter,
+        sehingga indeks tunggal lebih efisien karna sesuai dengan kebutuhannya.
+        - Indeks ini mempercepat pencarian berbasis username/ created_at/ email pengguna karena 
+        menghindari pencarian tabel penuh (full table scan).
+
+        Trade-off:
+        - Read Performance: Meningkatkan kecepatan pencarian berdasarkan username/ created_at/ email .
+        - Write Performance: Membutuhkan tambahan waktu untuk memperbarui indeks setiap kali ada operasi
+            INSERT, UPDATE, atau DELETE.
+
+3. Saya menggunakan DB Transaction untuk menghandle race conditions pada kasus tersebut dan telah 
+    saya implementasikan pada endpoint wallet, sebenarnya golang juga punya fitur untuk handle
+    race conditions tapi untuk saat ini saya implentasikan menggunakan DB Transaction.
+
+4. 
+    SELECT customer_id, SUM(amount) AS total_spent
+    FROM orders
+    WHERE order_date >= NOW() - INTERVAL 1 MONTH
+    GROUP BY customer_id
+    ORDER BY total_spent DESC
+    LIMIT 5;
+
+    Penjelasan:
+    WHERE order_date >= NOW() - INTERVAL 1 MONTH: Menyaring pesanan yang hanya dibuat dalam sebulan terakhir.
+    GROUP BY customer_id: Mengelompokkan hasil berdasarkan customer_id agar kita dapat menghitung total pengeluaran setiap pelanggan.
+    SUM(amount) AS total_spent: Menjumlahkan kolom amount untuk setiap pelanggan.
+    ORDER BY total_spent DESC: Mengurutkan hasil berdasarkan total pengeluaran secara menurun, sehingga pelanggan dengan pengeluaran tertinggi muncul di depan.
+    LIMIT 5: Membatasi hasil hanya pada 5 pelanggan teratas.
+
+
+    * Improve the performance of this query in a production environment?
+    1. Indeks pada order_date 
+     - Saat ini, order_date belum diindeks. Menambahkan indeks pada kolom order_date akan meningkatkan kinerja query secara signifikan, 
+       terutama jika tabel memiliki jumlah data yang besar.
+       " CREATE INDEX idx_order_date ON orders(order_date); "
+       Dengan indeks ini, database dapat dengan cepat memfilter baris-baris yang sesuai dengan rentang waktu sebulan tanpa perlu 
+       memindai seluruh tabel.
+    2. Indeks Gabungan pada customer_id dan order_date
+     - Meskipun customer_id sudah diindeks, membuat indeks gabungan pada (customer_id, order_date) bisa lebih meningkatkan kinerja query, karena ini akan 
+       mempercepat pencarian data yang relevan dan pengelompokannya.
+       " CREATE INDEX idx_customer_id_order_date ON orders(customer_id, order_date); "
+    3. Materialized Views
+     - Untuk query yang sering diakses mengenai pengeluaran bulanan pelanggan, pertimbangkan untuk membuat materialized view yang menghitung pengeluaran bulanan setiap 
+        pelanggan terlebih dahulu.
+        ini akan mengurangi kebutuhan untuk melakukan agregasi setiap kali query dijalankan dan bisa meningkatkan performa query secara signifikan.
+    4. Caching
+     - Jika query ini sering dijalankan, pertimbangkan untuk menggunakan caching pada tingkat 
+        aplikasi, terutama jika data tidak sering berubah. Misalnya, caching hasil pengeluaran pelanggan teratas untuk jangka waktu tertentu 
+        (misalnya satu jam) bisa mengurangi beban pada database.
+        
+
+
+
