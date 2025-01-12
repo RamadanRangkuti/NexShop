@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -11,9 +12,10 @@ import (
 func VerifyHash(hash string, password string) bool {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
+		log.Fatal("Error loading .env file")
 	}
-	result, _ := argon2.ComparePasswordAndHash(hash, os.Getenv("SECRETKEY"), password)
+	result, err := argon2.ComparePasswordAndHash(hash, os.Getenv("HASHKEY"), password)
+	fmt.Println("Error during verification:", err)
 	return result
 }
 
@@ -22,6 +24,6 @@ func GenerateHash(password string) string {
 	if err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
-	result, _ := argon2.CreateHash(password, os.Getenv("SECRETKEY"), argon2.DefaultParams)
+	result, _ := argon2.CreateHash(password, os.Getenv("HASHKEY"), argon2.DefaultParams)
 	return result
 }

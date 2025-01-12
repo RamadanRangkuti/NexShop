@@ -25,8 +25,7 @@ type BaseInfo struct {
 }
 
 type TokenPayload struct {
-	UserId int `json:"userId"` // ID pengguna
-	// UserRole int `json:"userRole"` // Role pengguna
+	UserId int `json:"userId"`
 }
 
 type FullToken struct {
@@ -34,7 +33,7 @@ type FullToken struct {
 	TokenPayload
 }
 
-func GenerateToken(userId int, userRole int) (string, error) {
+func GenerateToken(userId int) (string, error) {
 	sig, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.HS256, Key: secretKey()}, (&jose.SignerOptions{}).WithType("JWT"))
 	if err != nil {
 		return "", err

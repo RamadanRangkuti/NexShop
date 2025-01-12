@@ -2,6 +2,7 @@ package routers
 
 import (
 	"github.com/RamadanRangkuti/NexShop/internal/handlers"
+	"github.com/RamadanRangkuti/NexShop/internal/middlewares"
 	"github.com/RamadanRangkuti/NexShop/internal/repository"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
@@ -17,5 +18,5 @@ func orderRouter(g *gin.Engine, d *sqlx.DB) {
 
 	handler := handlers.NewPurchaseHandler(cartRepo, productRepo, accountRepo, orderRepo)
 
-	route.POST("/purchase", handler.CompletePurchase)
+	route.POST("/purchase", middlewares.ValidateToken(), handler.CompletePurchase)
 }

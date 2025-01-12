@@ -8,6 +8,7 @@ import (
 func New(db *sqlx.DB) *gin.Engine {
 	router := gin.Default()
 
+	authRouter(router, db)
 	productRouter(router, db)
 	userRouter(router, db)
 	accountRouter(router, db)

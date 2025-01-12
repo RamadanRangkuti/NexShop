@@ -148,7 +148,7 @@ func (r *UserRepository) FindUsersBySignupDate(date string) (*models.Users, erro
 }
 
 func (r *UserRepository) FindUserByEmail(email string) (*models.User, error) {
-	query := `SELECT id, username, email, password FROM users WHERE email = $1`
+	query := `SELECT id, COALESCE(username, '') AS username, email, password FROM users WHERE email = $1`
 	data := models.User{}
 	err := r.Get(&data, query, email)
 	if err != nil {

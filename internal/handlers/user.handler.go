@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/RamadanRangkuti/NexShop/internal/dto"
@@ -76,10 +77,16 @@ func (h *UserHandler) GetAllUser(ctx *gin.Context) {
 
 func (h *UserHandler) GetUserById(ctx *gin.Context) {
 	response := pkg.NewResponse(ctx)
-	id, err := strconv.Atoi(ctx.Param("id"))
 
-	if err != nil {
-		response.BadRequest("Invalid input", err.Error())
+	userId, exists := ctx.Get("UserId")
+	fmt.Println("userid", userId)
+	if !exists {
+		response.Unauthorized("Unauthorized", nil)
+		return
+	}
+	id, ok := userId.(int)
+	if !ok {
+		response.InternalServerError("Failed to parse user ID from token", nil)
 		return
 	}
 
@@ -120,9 +127,17 @@ func (h *UserHandler) CreateUser(ctx *gin.Context) {
 
 func (h *UserHandler) UpdateUser(ctx *gin.Context) {
 	response := pkg.NewResponse(ctx)
-	id, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
-		response.BadRequest("Invalid input", "ID must be a valid number")
+
+	userId, exists := ctx.Get("UserId")
+	fmt.Println("userid", userId)
+	if !exists {
+		response.Unauthorized("Unauthorized", nil)
+		return
+	}
+	id, ok := userId.(int)
+
+	if !ok {
+		response.InternalServerError("Failed to parse user ID from token", nil)
 		return
 	}
 
@@ -145,7 +160,11 @@ func (h *UserHandler) UpdateUser(ctx *gin.Context) {
 		existingData.Username = *req.Username
 	}
 	if req.Password != nil {
-		existingData.Password = *req.Password
+		if !IsValidPassword(*req.Password) {
+			response.BadRequest("Password must be at least 8 characters long", nil)
+			return
+		}
+		existingData.Password = pkg.GenerateHash(*req.Password)
 	}
 
 	now := time.Now()
@@ -162,9 +181,16 @@ func (h *UserHandler) UpdateUser(ctx *gin.Context) {
 
 func (h *UserHandler) DeleteUser(ctx *gin.Context) {
 	response := pkg.NewResponse(ctx)
-	id, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
-		response.BadRequest("Invalid input", "ID must be a valid number")
+	userId, exists := ctx.Get("UserId")
+	fmt.Println("userid", userId)
+	if !exists {
+		response.Unauthorized("Unauthorized", nil)
+		return
+	}
+	id, ok := userId.(int)
+
+	if !ok {
+		response.InternalServerError("Failed to parse user ID from token", nil)
 		return
 	}
 	existingData, _ := h.FindUserById(id)
@@ -172,7 +198,7 @@ func (h *UserHandler) DeleteUser(ctx *gin.Context) {
 		response.NotFound(fmt.Sprintf("User with ID %d not found", id), nil)
 		return
 	}
-	err = h.RemoveUser(id)
+	err := h.RemoveUser(id)
 	if err != nil {
 		response.BadRequest("delete user failed", err.Error())
 		return
@@ -234,4 +260,10 @@ func (h *UserHandler) GetUserByEmail(ctx *gin.Context) {
 	}
 
 	response.Success("Success get user by email", result)
+}
+
+// Fungsi untuk menyaring karakter berbahaya
+func SanitizeString(input string) string {
+	// Contoh sederhana untuk menghapus karakter-karakter tertentu
+	return strings.ReplaceAll(input, "'", "")
 }
