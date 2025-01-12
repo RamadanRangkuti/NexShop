@@ -1,48 +1,102 @@
-# NEXSHOP Services API
+# NEXShop
 
-API ini adalah aplikasi e-commerce menggunakan Golang dan PostgreSQL.
+NEXShop is a simple restful api for managing e-commerce. This application makes it easier for users if they want to buy some product.
 
-## Persiapan Sebelum Memulai
+## Table of Contents
 
-1. **Pastikan Database Sudah Tersedia**
-   - Pastikan Anda sudah membuat database PostgreSQL dengan nama **`nexshop_db`**.
+1. [About](#about)
+   - [Features](#features)
+   - [Technologies](#Technologies)
+2. [Start](#start)
+   - [Prerequisite](#Prerequisite)
+   - [Installation](#Installation)
+   - [Configuration](#Configuration)
+   - [Run](#Run)
+   - [Directory Structure](#Directory Structure)
+3. [Contact](#Contact)
 
-2. **Jalankan Query Yang Tersedia**
-    - Buka file `schema.sql` pada aplikasi ini.
-    - Copy dan Jalankan pada Database Client seperti Dbeaver Dan lainnya.
+## About
 
-3. **Konfigurasi Aplikasi**
-   - Buka file `.env-sample-config` pada aplikasi ini.
-   - Sesuaikan pengaturan koneksi database dan konfigurasi lainnya sesuai dengan lingkungan Anda.
+Nexshop was built with the aim of making it easier for users to buy some product. This api is made using Gin-Gon and the database uses PostgreSQL.
 
-## Langkah-Langkah Menjalankan Aplikasi
+### Features
 
-### 1. Mendownload seluruh kebutuhan aplikasi
-    - Setelah setup dan konfigurasi  database  selesai , download package yang dibutuhkan pada aplikasi dengan perintah :
-    ```bash
-    go mod tidy
-    ```
-    - Aplikasi akan mendownload seluruh package yang dibutuhkan.
+- CRUD User, Product, Cart, Order
+- Authentication With JWT
+- Hash Password
 
-### 2. Menjalankan aplikasi
-    - Setelah selesai mendownload package, jalankan aplikasi denga perintah :
-    ```bash
-    go run ./cmd/main.go
-    ```
-    - Aplikasi akan berjalan pada http://localhost:8080 jika anda tidak mengatur portnya pada .env file
+### Technologies
 
-## Struktur Direktori
-- **cmd/**: Entry point aplikasi
-- **internal/**: Bisnis logic untuk aplikasi
-- **pkg/**: Menyimpan konfigurasi yang berkaitan dengan layanan pihak ketiga seperti postgres, jwt dan lainnya.
-- **internal/handlers/**: Lapisan yang menangani permintaan dari pengguna, baik dari aplikasi mobile maupun web.
-- **migration/**: Menyimpan file migration SQL dan kode untuk mengatur dan memperbarui struktur database (coming soon).
-- **internal/models/**: Berisi struktur data (constructs di Golang) yang memudahkan dalam membuat kontrak untuk request dan response.
-- **internal/respositories/**: Lapisan yang berfungsi khusus untuk berinteraksi dengan database, termasuk operasi pencatatan dan pengambilan data.
-- **internal/routes/**: Menyimpan definisi endpoint utama yang mengarahkan 
-- **.env**: File konfigurasi utama untuk mengatur koneksi database dan parameter aplikasi lainnya.
+- Gin Gonic
+- Golang
+- PostgreSQL
 
-## Teknologi yang Digunakan
+## Start
 
-- **Golang**: Backend aplikasi utama.
-- **PostgreSQL**: Database untuk menyimpan data pengguna.
+### Prerequisite
+
+To get started, you need to have Golang installed on your system. If it's not installed yet, download and install it from the official Golang website.
+
+### Installation
+
+1. Ensure the Database is Available
+   - Make sure you have created a PostgreSQL database named **`nexshop_db`**.
+
+2. Run the Available Queries
+   - Open the schema.sql file in this application.
+   - Copy and execute it in a database client like DBeaver or others.
+
+3. Clone the repository
+
+```sh
+$ git clone https://github.com/RamadanRangkuti/NexShop.git
+```
+
+4. Go to folder repository
+
+```sh
+$ cd [name]
+```
+
+5. Open folder
+
+```sh
+$ code .
+```
+
+6. Download the dependencies:
+
+```sh
+$ go mod tidy
+```
+
+### Configuration
+
+The project uses a .env file for environment variables like database connection details, server etc.
+you can create a .env file according to the .env.example in the root directory
+
+### Run
+
+Run the following command to start the server:
+
+```sh
+$ go run cmd/main.go
+```
+
+
+## Directory Structure
+
+- **cmd/**: Entry point of the application.
+- **internal/**:  Business logic for the application.
+- **pkg/**: Stores configurations related to third-party services like PostgreSQL, JWT, and others.
+- **internal/handlers/**:  A layer that handles requests from users, whether from mobile or web applications.
+- **migration/**: Stores SQL migration files and code to manage and update database structures (coming soon).
+- **internal/models/**: Contains data structures (constructs in Golang) that simplify creating contracts for requests and responses.
+- **internal/respositories/**:  A dedicated layer for interacting with the database, including data recording and retrieval operations.
+- **internal/routes/**: tores the main endpoint definitions that direct requests.
+- **.env**: he primary configuration file to set up database connections and other application parameters.
+
+
+## Contact
+
+Ramadan Rankguti - ramadanrangkuti17@gmail.com
