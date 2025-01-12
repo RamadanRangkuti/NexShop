@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/RamadanRangkuti/NexShop/internal/models"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -14,6 +15,7 @@ type AccountRepositoryInterface interface {
 	Deposit(userID int, amount float64) error
 	Withdraw(userID int, amount float64) error
 	GetBalance(userID int) (float64, error)
+	CreateAccount(userID int) error
 }
 
 type AccountRepository struct {
@@ -116,4 +118,22 @@ func (r *AccountRepository) GetBalance(userID int) (float64, error) {
 		return 0, err
 	}
 	return balance, nil
+}
+
+func (r *AccountRepository) CreateAccount(userID int) error {
+	query := `INSERT INTO accounts (
+		user_id,
+		balance
+	  ) VALUES (
+		:user_id,
+		:balance
+	  )`
+
+	account := models.CreateAccount{
+		UserId:  userID,
+		Balance: 0,
+	}
+
+	_, err := r.NamedExec(query, account)
+	return err
 }

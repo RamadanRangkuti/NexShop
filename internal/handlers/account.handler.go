@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"strconv"
-
 	"github.com/RamadanRangkuti/NexShop/internal/repository"
 	"github.com/RamadanRangkuti/NexShop/pkg"
 	"github.com/gin-gonic/gin"
@@ -19,9 +17,16 @@ func NewAccountHandler(r repository.AccountRepositoryInterface) *AccountHandler 
 func (h *AccountHandler) Deposit(ctx *gin.Context) {
 	response := pkg.NewResponse(ctx)
 
-	userID, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
-		response.BadRequest("Invalid user ID", err.Error())
+	userId, exists := ctx.Get("UserId")
+
+	if !exists {
+		response.Unauthorized("Unauthorized", nil)
+		return
+	}
+	id, ok := userId.(int)
+
+	if !ok {
+		response.InternalServerError("Failed to parse user ID from token", nil)
 		return
 	}
 
@@ -38,7 +43,7 @@ func (h *AccountHandler) Deposit(ctx *gin.Context) {
 		return
 	}
 
-	err = h.AccountRepositoryInterface.Deposit(userID, req.Amount)
+	err := h.AccountRepositoryInterface.Deposit(id, req.Amount)
 	if err != nil {
 		response.InternalServerError("Failed to deposit", err.Error())
 		return
@@ -50,9 +55,15 @@ func (h *AccountHandler) Deposit(ctx *gin.Context) {
 func (h *AccountHandler) Withdraw(ctx *gin.Context) {
 	response := pkg.NewResponse(ctx)
 
-	userID, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
-		response.BadRequest("Invalid user ID", err.Error())
+	userId, exists := ctx.Get("UserId")
+
+	if !exists {
+		response.Unauthorized("Unauthorized", nil)
+		return
+	}
+	id, ok := userId.(int)
+	if !ok {
+		response.InternalServerError("Failed to parse user ID from token", nil)
 		return
 	}
 
@@ -69,7 +80,7 @@ func (h *AccountHandler) Withdraw(ctx *gin.Context) {
 		return
 	}
 
-	err = h.AccountRepositoryInterface.Withdraw(userID, req.Amount)
+	err := h.AccountRepositoryInterface.Withdraw(id, req.Amount)
 	if err != nil {
 		response.InternalServerError("Failed to withdraw", err.Error())
 		return
@@ -81,13 +92,19 @@ func (h *AccountHandler) Withdraw(ctx *gin.Context) {
 func (h *AccountHandler) GetBalance(ctx *gin.Context) {
 	response := pkg.NewResponse(ctx)
 
-	userID, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
-		response.BadRequest("Invalid user ID", err.Error())
+	userId, exists := ctx.Get("UserId")
+
+	if !exists {
+		response.Unauthorized("Unauthorized", nil)
+		return
+	}
+	id, ok := userId.(int)
+	if !ok {
+		response.InternalServerError("Failed to parse user ID from token", nil)
 		return
 	}
 
-	balance, err := h.AccountRepositoryInterface.GetBalance(userID)
+	balance, err := h.AccountRepositoryInterface.GetBalance(id)
 	if err != nil {
 		response.InternalServerError("Failed to fetch balance", err.Error())
 		return

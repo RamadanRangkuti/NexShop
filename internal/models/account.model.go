@@ -9,3 +9,8 @@ type Account struct {
 	CreatedAt *time.Time `db:"created_at"`
 	UpdatedAt *time.Time `db:"updated_at"`
 }
+
+type CreateAccount struct {
+	UserId  int `db:"user_id"`
+	Balance int `db:"balance"`
+}

@@ -13,16 +13,19 @@ import (
 
 type AuthHandler struct {
 	repository.AuthRepositoryInterface
+	repository.AccountRepositoryInterface
 	repository.UserRepositoryInterface
 }
 
 func NewAuthHandler(
 	authRepo repository.AuthRepositoryInterface,
+	accountRepo repository.AccountRepositoryInterface,
 	userRepo repository.UserRepositoryInterface,
 ) *AuthHandler {
 	return &AuthHandler{
-		AuthRepositoryInterface: authRepo,
-		UserRepositoryInterface: userRepo,
+		AuthRepositoryInterface:    authRepo,
+		AccountRepositoryInterface: accountRepo,
+		UserRepositoryInterface:    userRepo,
 	}
 }
 
@@ -56,7 +59,6 @@ func (h *AuthHandler) Register(ctx *gin.Context) {
 		return
 	}
 	hashed := pkg.GenerateHash(input.Password)
-	fmt.Println("Generated Hash:", hashed)
 	newUser := models.Auth{
 		Email:    input.Email,
 		Username: "",
@@ -65,6 +67,12 @@ func (h *AuthHandler) Register(ctx *gin.Context) {
 	createdUser, err := h.AuthRepositoryInterface.RegisterUser(&newUser)
 	if err != nil {
 		response.InternalServerError("Failed to create user", err.Error())
+		return
+	}
+	err = h.AccountRepositoryInterface.CreateAccount(createdUser.Id)
+
+	if err != nil {
+		response.InternalServerError("Failed to create account", err.Error())
 		return
 	}
 

@@ -140,15 +140,21 @@ func (r *ProductRepository) ReduceStock(productID, quantity int) error {
 	query := `UPDATE products 
 	          SET stock = stock - $1 
 	          WHERE id = $2 AND stock >= $1`
+
 	result, err := r.Exec(query, quantity, productID)
 	if err != nil {
+		fmt.Printf("Error executing query: %v\n", err)
 		return err
 	}
 
-	rowsAffected, _ := result.RowsAffected()
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		fmt.Printf("Error getting rows affected: %v\n", err)
+		return err
+	}
+
 	if rowsAffected == 0 {
 		return fmt.Errorf("insufficient stock")
 	}
-
 	return nil
 }

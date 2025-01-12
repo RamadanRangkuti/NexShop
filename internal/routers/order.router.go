@@ -18,5 +18,6 @@ func orderRouter(g *gin.Engine, d *sqlx.DB) {
 
 	handler := handlers.NewPurchaseHandler(cartRepo, productRepo, accountRepo, orderRepo)
 
+	// route.POST("/purchase/:id", middlewares.ValidateToken(), handler.CompletePurchase)
 	route.POST("/purchase", middlewares.ValidateToken(), handler.CompletePurchase)
 }

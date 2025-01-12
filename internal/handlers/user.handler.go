@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/RamadanRangkuti/NexShop/internal/dto"
@@ -85,6 +84,7 @@ func (h *UserHandler) GetUserById(ctx *gin.Context) {
 		return
 	}
 	id, ok := userId.(int)
+
 	if !ok {
 		response.InternalServerError("Failed to parse user ID from token", nil)
 		return
@@ -100,6 +100,7 @@ func (h *UserHandler) GetUserById(ctx *gin.Context) {
 		response.NotFound(fmt.Sprintf("User with ID %d not found", id), nil)
 		return
 	}
+
 	response.Success("Success get user", result)
 }
 
@@ -111,6 +112,8 @@ func (h *UserHandler) CreateUser(ctx *gin.Context) {
 		return
 	}
 
+	hashedPassword := pkg.GenerateHash(req.Password)
+	req.Password = hashedPassword
 	user := models.User{
 		Username: req.Username,
 		Email:    req.Email,
@@ -260,10 +263,4 @@ func (h *UserHandler) GetUserByEmail(ctx *gin.Context) {
 	}
 
 	response.Success("Success get user by email", result)
-}
-
-// Fungsi untuk menyaring karakter berbahaya
-func SanitizeString(input string) string {
-	// Contoh sederhana untuk menghapus karakter-karakter tertentu
-	return strings.ReplaceAll(input, "'", "")
 }

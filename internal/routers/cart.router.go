@@ -16,4 +16,6 @@ func cartRouter(g *gin.Engine, d *sqlx.DB) {
 	handler := handlers.NewShoppingCartHandler(cartRepo, productRepo)
 	route.POST("/:id/add", middlewares.ValidateToken(), handler.AddToCart)
 	route.GET("/:id", middlewares.ValidateToken(), handler.GetCartById)
+	route.PUT("/:id", middlewares.ValidateToken(), handler.UpdateCartItem)
+	route.DELETE("/:id", middlewares.ValidateToken(), handler.DeleteCartItem)
 }
