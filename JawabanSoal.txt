@@ -64,5 +64,35 @@
         (misalnya satu jam) bisa mengurangi beban pada database.
         
 
+5. 
+You are tasked with refactoring a monolithic service that handles multiple responsibilities such as authentication, 
+file uploads, and user data processing. The system has become slow and hard to maintain. How would you approach refactoring 
+the service?
+
+* What steps would you take to decompose the service into smaller, more manageable services?
+
+    # Saya asumsikan lambat dalam konteks RPS
+    # Saya asumsikan sistemnya ada di belakang request proxy semacam nginx
+    client -> [ nginx -> service backend -> database ]
+
+    1. Ketahui dahulu endpoint apa saja yang menyebabkan "Bottleneck"
+    - Gunakan tools APM (Application Performance Monitoring) untuk mengecek performa dari aplikasi
+    - Pada tools APM kita bisa lihat spesifik endpoint mana yang lambat termasuk query lambat dalam aplikasi
+
+    Dari hasil analisis, 
+        - jika ternyata penyebab lambatnya aplikasi adalah ketidak efesienan query (terlalu banyak subquery) maka langkahnya
+        adalah saya akan refactor querynya.
+        - jika ternyata codenya yang lambat (misal for dalam for) maka langkahnya saya akan refactor terlebih dahulu codenya.
+
+    Bagaimana jika setelah refactor query ataupun refactor code tetap lambat?
+    Saya akan pisahkan endpoint yang lambat tersebut ke service baru secara terpisah.
+    # Salah satu alasan service lambat adalah salah satu service sibuk menghandle satu request yang lambat 
+    jadi service lain yang bergantung menunggu itu selesai dahulu baru bisa memproses service lainnya.
 
 
+* How would you ensure that the new system is backward compatible with the old one during the transition?
+    - Caranya menggunakan api versioning
+    ex : service lama untuk user : "url/user" 
+       : service baru untuk user : "url/v2/user"
+     * untuk setiap user yang masih menggunakan sistem lama tetap mengarah saya arahkan ke "url/user" 
+     * untu setiap user yang menggunakan sistem baru akan diarahkan ke "url/v2/user"
