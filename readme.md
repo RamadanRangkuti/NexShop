@@ -84,7 +84,7 @@ $ go run cmd/main.go
 ```
 
 
-## Directory Structure
+### Directory Structure
 
 - **cmd/**: Entry point of the application.
 - **internal/**:  Business logic for the application.
