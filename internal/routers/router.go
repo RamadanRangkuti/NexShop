@@ -12,5 +12,6 @@ func New(db *sqlx.DB) *gin.Engine {
 	userRouter(router, db)
 	accountRouter(router, db)
 	cartRouter(router, db)
+	orderRouter(router, db)
 	return router
 }

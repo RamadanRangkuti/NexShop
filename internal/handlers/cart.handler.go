@@ -79,13 +79,6 @@ func (h *ShoppingCartHandler) AddToCart(ctx *gin.Context) {
 		return
 	}
 
-	// Reduce stock di product
-	err = h.ProductRepositoryInterface.ReduceStock(req.ProductID, req.Quantity)
-	if err != nil {
-		response.InternalServerError("Failed to reduce product stock", err.Error())
-		return
-	}
-
 	response.Success("Item added to cart", nil)
 }
 

@@ -12,6 +12,7 @@ type ShoppingCartRepositoryInterface interface {
 	AddCartItem(userID, productID, quantity int) error
 	UpdateCartItem(userID, productID, quantity int) error
 	FindCartByUserid(id int) (*models.DetailShoppingCarts, error)
+	ClearCartByUserID(userID int) error
 }
 
 type ShoppingCartRepository struct {
@@ -65,4 +66,10 @@ on u.id = sc.user_id join products p on p.id = sc.product_id where user_id=$1`
 	}
 
 	return &data, nil
+}
+
+func (r *ShoppingCartRepository) ClearCartByUserID(userID int) error {
+	query := `DELETE FROM shopping_cart WHERE user_id = $1`
+	_, err := r.Exec(query, userID)
+	return err
 }
