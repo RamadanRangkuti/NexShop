@@ -90,7 +90,7 @@ the service?
     jadi service lain yang bergantung menunggu itu selesai dahulu baru bisa memproses service lainnya.
 
 
-* How would you ensure that the new system is backward compatible with the old one during the transition?
+* How would you ensure that the new system is backward compatible with the old one during the transition? 
     - Caranya menggunakan api versioning
     ex : service lama untuk user : "url/user" 
        : service baru untuk user : "url/v2/user"
